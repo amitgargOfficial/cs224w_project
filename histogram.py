@@ -18,11 +18,11 @@ def parseReviews(path):
 	for review in parseIterator(path):
 		# Adding nodes to GUsers
 		year = review['reviewTime'].split()
-		if year not in yearlist:
-			yearlist.append(year)
+		if year[2] not in yearlist:
+			yearlist.append(year[2])
 			countlist.append(1)
 		else:
-			index = yearlist.index(year)
+			index = yearlist.index(year[2])
 			countlist[index] += 1
 
 	for i in range(0, len(yearlist)):
