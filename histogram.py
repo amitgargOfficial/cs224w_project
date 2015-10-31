@@ -1,6 +1,5 @@
 import sys
 import gzip
-import snap
 import time
 
 yearlist = []
@@ -12,11 +11,7 @@ def parseIterator(path):
 		yield eval(l)
 
 def parseReviews(path):
-	# Adding nodes to GUsers
-	global combinedNodeId
-	usersNodeId = 0
 	for review in parseIterator(path):
-		# Adding nodes to GUsers
 		year = review['reviewTime'].split()
 		if year[2] not in yearlist:
 			yearlist.append(year[2])
@@ -27,16 +22,11 @@ def parseReviews(path):
 
 	for i in range(0, len(yearlist)):
 		print str(yearlist[i]) + " - " + str(countlist[i])
-
-		
 		
 def main(argv):
 	item = 'Automotive'
-
-	# Parsing Reviews
 	parseReviews('reviews_' + item + '.json.gz')
 	
-
 if __name__ == '__main__':
 	start_time = time.time()
 	main(sys.argv)

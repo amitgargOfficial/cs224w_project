@@ -5,7 +5,7 @@ import time
 
 GItems = snap.TUNGraph.New()
 
-nodeIdItems = {} # Key is the nodeId (int) in the graph and value (string) is the asin of the item
+''' nodeIdItems = {} # Key is the nodeId (int) in the graph and value (string) is the asin of the item '''
 asinItems = {} # Key (string) is the asin of the item and value is the nodeId (int) in the graph
 
 GUsers = snap.TUNGraph.New()
@@ -15,7 +15,7 @@ reviewerIdUsers = {} # Key (string) is the reviewerID of the user and value is t
 
 GCombined = snap.TUNGraph.New()
 
-nodeIdCombined = {} # Key is the nodeId (int) in the graph and value (string) is the reviewerID of the user or asin of the item
+''' nodeIdCombined = {} # Key is the nodeId (int) in the graph and value (string) is the reviewerID of the user or asin of the item '''
 asinReviewerIdCombined = {} # Key (string) is the reviewerID of the user or asin of the item and value is the nodeId (int) in the graph
 combinedNodeId = 0
 
@@ -31,12 +31,12 @@ def parseItems(path):
 	for item in parseIterator(path):
 		# Adding nodes to GItems
 		GItems.AddNode(itemsNodeId)
-		nodeIdItems[itemsNodeId] = item['asin']
+		''' nodeIdItems[itemsNodeId] = item['asin'] '''
 		asinItems[item['asin']] = itemsNodeId
 		itemsNodeId +=1
 		# Adding nodes to GCombined
 		GCombined.AddNode(combinedNodeId)
-		nodeIdCombined[combinedNodeId] = item['asin']
+		''' nodeIdCombined[combinedNodeId] = item['asin'] '''
 		asinReviewerIdCombined[item['asin']] = combinedNodeId
 		combinedNodeId +=1
 
@@ -52,7 +52,7 @@ def parseItems(path):
 			pass
 
 def parseReviews(path):
-	# Adding nodes to GUsers
+	# Adding nodes to GUsers and GCombined
 	global combinedNodeId
 	usersNodeId = 0
 	for review in parseIterator(path):
@@ -65,7 +65,7 @@ def parseReviews(path):
 			usersNodeId += 1
 			# Adding nodes to GCombined
 			GCombined.AddNode(combinedNodeId)
-			nodeIdCombined[combinedNodeId] = review['reviewerID']
+			''' nodeIdCombined[combinedNodeId] = review['reviewerID'] '''
 			asinReviewerIdCombined[review['reviewerID']] = combinedNodeId
 			combinedNodeId += 1
 
