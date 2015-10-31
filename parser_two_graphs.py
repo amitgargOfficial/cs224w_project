@@ -2,6 +2,7 @@ import sys
 import gzip
 import snap
 import time
+import json
 
 GItems = snap.TUNGraph.New()
 
@@ -95,7 +96,10 @@ def main(argv):
 	snap.PrintInfo(GItems, 'GItems Information')
 		  
 	# Saving GItems
-	snap.SaveEdgeList(GItems, directory + 'Text_GItems_' + item + '.txt')
+	snap.SaveEdgeList(GItems, directory + 'Edge_List_Items_' + item + '.txt')
+
+	with open(directory + 'Dictionary_Items_' + item + '.txt', 'w') as f1:
+		json.dump(asinItems, f1)
 
 	# Parsing Reviews
 	parseReviews(directory + 'reviews_' + item + '.json.gz')
@@ -103,7 +107,10 @@ def main(argv):
 	snap.PrintInfo(GUsers, 'GUsers Information')
 
 	# Saving GUsers
-	snap.SaveEdgeList(GUsers, directory + 'Text_GUsers_' + item + '.txt')
+	snap.SaveEdgeList(GUsers, directory + 'Edge_List_Users_' + item + '.txt')
+
+	with open(directory + 'Dictionary_Users_' + item + '.txt', 'w') as f2:
+		json.dump(reviewerIdUsers, f2)
 
 if __name__ == '__main__':
 	start_time = time.time()
