@@ -57,18 +57,20 @@ def parseReviews(path):
 	usersNodeId = 0
 	for review in parseIterator(path):
 		# Adding nodes to GUsers
-		GUsers.AddNode(usersNodeId)
-		nodeIdUsers[usersNodeId] = review['reviewerID']
-		reviewerIdUsers[review['reviewerID']] = usersNodeId
-		usersNodeId +=1
-		# Adding nodes to GCombined
-		GCombined.AddNode(combinedNodeId)
-		nodeIdCombined[combinedNodeId] = review['reviewerID']
-		asinReviewerIdCombined[review['reviewerID']] = combinedNodeId
-		combinedNodeId +=1
+		reviewerId = reviewerIdUsers.get(review['reviewerID'])
+		if reviewerId is None:
+			GUsers.AddNode(usersNodeId)
+			nodeIdUsers[usersNodeId] = review['reviewerID']
+			reviewerIdUsers[review['reviewerID']] = usersNodeId
+			usersNodeId += 1
+			# Adding nodes to GCombined
+			GCombined.AddNode(combinedNodeId)
+			nodeIdCombined[combinedNodeId] = review['reviewerID']
+			asinReviewerIdCombined[review['reviewerID']] = combinedNodeId
+			combinedNodeId += 1
 
 	# Adding edges to GUsers
-	goodRating = 3
+	goodRating = 5
 	users = []
 	reviews = parseIterator(path)
 	while True: # Adding the first user with overall > goodRating
@@ -103,7 +105,7 @@ def parseReviews(path):
 			break
 		
 def main(argv):
-	item = 'Video_Games'
+	item = 'Automotive'
 
 	# Parsing Items
 	parseItems('meta_' + item + '.json.gz')
