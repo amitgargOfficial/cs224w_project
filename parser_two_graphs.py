@@ -37,7 +37,7 @@ def parseItems(path):
 		except KeyError:
 			pass
 
-def parseReviews(path):
+def parseReviews(path, goodRating):
 	# Adding nodes to GUsers
 	usersNodeId = 0
 	for review in parseIterator(path):
@@ -52,7 +52,6 @@ def parseReviews(path):
 				usersNodeId += 1
 
 	# Adding edges to GUsers
-	goodRating = 5
 	users = []
 	reviews = parseIterator(path)
 	while True: # Adding the first user with overall > goodRating
@@ -88,7 +87,8 @@ def parseReviews(path):
 		
 def main(argv):
 	directory = '/Users/home/Desktop/Google Drive/Courses/224W/Project/Data/'
-	item = 'Books'
+	item = 'Amazon_Instant_Video'
+	goodRating = 3
 
 	# Parsing Items
 	parseItems(directory + 'meta_' + item + '.json.gz')
@@ -102,7 +102,7 @@ def main(argv):
 		json.dump(asinItems, f1)
 
 	# Parsing Reviews
-	parseReviews(directory + 'reviews_' + item + '.json.gz')
+	parseReviews(directory + 'reviews_' + item + '.json.gz', goodRating)
 	
 	snap.PrintInfo(GUsers, 'GUsers Information')
 
