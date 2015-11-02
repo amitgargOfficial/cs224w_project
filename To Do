@@ -2,7 +2,16 @@ Add weights to edges:
 	1. Based on the number of items both users
 	2. If both users give same ratings then higher weights
 
+Community Detection:
+	1. K-cores
+
 Ranking nodes:
 	1. Pagerank (Use weights?)
 	2. ExpertiseRank
 	3. Distance of nodes from current user
+	4. Z-scores
+
+Link Prediction
+	1. Common Neighbors
+	2. Jacard's Coefficient
+	3. Hitting time
