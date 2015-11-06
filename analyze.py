@@ -2,6 +2,7 @@ from os import listdir
 from os.path import isfile, join
 import networkx as nx
 import matplotlib.pyplot as plt
+import snap
 
 inputDir = './UnanalyzedClusters/'
 outDirPR = './PageRankedClusters/'
@@ -10,7 +11,7 @@ outDirCentrality = './CentrClusters/'
 
 inFiles = [f for f in listdir(inputDir) 
 	if isfile(join(inputDir,f)) ]
-inFiles = ['cluster12']
+inFiles = ['cluster124']
 
 def pageRank(G):
 	pagerank = nx.pagerank(G, weight='weight', max_iter=100) # Returns dictionary
@@ -59,10 +60,31 @@ def centralityMeasures(G):
 	katz = nx.katz_centrality(G, normalized=True, weight='weight', alpha=0.005)
 	print sorted([(k,v) for k,v in katz.iteritems()], key= lambda x:(-x[1],x[0]))
 
+def getDistance(GSnap):
+	matrix = [[0 for x in range(GSnap.GetNodes())] for x in range(GSnap.GetNodes())]
+	for node in GSnap.Nodes():
+		hop = 0
+		flag = True
+		while flag == True:
+			hop += 1
+			flag = False
+			NodeVec = snap.TIntV()
+			print 'h'
+			snap.GetNodesAtHop(GSnap, node.GetNI(), hop, NodeVec, False)
+			print 'g'
+			for item in NodeVec:
+				flag = True
+				matrix[node.GetNI()][item] = hop
+				print 'i'
+	print matrix
+
 
 for clusterFile in inFiles:
 	G = nx.read_weighted_edgelist(inputDir+clusterFile, comments='#', nodetype=int)
 
 	print "Loaded " + clusterFile
 	# pageRank(G)
-	centralityMeasures(G)
+	#centralityMeasures(G)
+	GSnap = snap.LoadEdgeList(snap.PUNGraph, inputDir + clusterFile, 0, 1, '\t')
+	getDistance(GSnap)
+
