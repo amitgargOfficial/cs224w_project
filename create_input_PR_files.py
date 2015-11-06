@@ -5,16 +5,17 @@ graph = snap.LoadEdgeList(snap.PUNGraph, graphFile, 0, 1, '\t')
 
 filename = './out/Edge_List_Users_Amazon_Instant_Video.tree'
 
-outFilePrefix = './input_PR/cluster'
+outFilePrefix = './UnanalyzedClusters/cluster'
+# outFilePrefix = './input_PR/cluster'
 N = 400
 
 def writeToFile(fname, NIdV, idx):
 	subG = snap.GetSubGraph(graph, NIdV)
 	string = ''
-	if idx==1:
-		print subG.GetEdges()
+	# if idx==1:
+	# 	print subG.GetEdges()
 	for edge in subG.Edges():
-		string += '%d\t%d\t%0.5f\n' %(edge.GetSrcNId(), edge.GetDstNId(), 1.0)
+		string += '%d\t%d\t%d\n' %(edge.GetSrcNId(), edge.GetDstNId(), 1.0)
 	with open(fname, 'w') as f:
 		f.write(string)
 	# if idx==399:
