@@ -10,12 +10,19 @@ N = 400
 
 def writeToFile(fname, NIdV, idx):
 	subG = snap.GetSubGraph(graph, NIdV)
+	string = ''
+	if idx==1:
+		print subG.GetEdges()
+	for edge in subG.Edges():
+		string += '%d\t%d\t%0.5f\n' %(edge.GetSrcNId(), edge.GetDstNId(), 1.0)
+	with open(fname, 'w') as f:
+		f.write(string)
 	# if idx==399:
 	# 	print len(NIdV), '\t', subG.GetNodes(), '\t', subG.GetEdges()
 	# snap.SaveEdgeList(subG, fname)
-	FOut = snap.TFOut(fname)
-	subG.Save(FOut)
-	FOut.Flush()
+	# FOut = snap.TFOut(fname)
+	# subG.Save(FOut)
+	# FOut.Flush()
 	# if idx==N:
 	# print subG.GetNodes()
 	# print subG.GetEdges()
