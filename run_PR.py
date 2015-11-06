@@ -16,3 +16,4 @@ for clusterFile in inFiles:
 	with open(join(outputDir,clusterFile),'w') as f:
 		for item in PRankH:
 		    f.write(str(item)+'\t'+str(PRankH[item])+'\n')
+		    
