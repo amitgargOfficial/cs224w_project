@@ -61,7 +61,7 @@ def centralityMeasures(G):
 	print sorted([(k,v) for k,v in katz.iteritems()], key= lambda x:(-x[1],x[0]))
 
 def getDistance(GSnap):
-	matrix = [[0 for x in range(GSnap.GetNodes())] for x in range(GSnap.GetNodes())]
+	matrix = dict()
 	for node in GSnap.Nodes():
 		hop = 0
 		flag = True
@@ -69,13 +69,16 @@ def getDistance(GSnap):
 			hop += 1
 			flag = False
 			NodeVec = snap.TIntV()
-			print 'h'
-			snap.GetNodesAtHop(GSnap, node.GetNI(), hop, NodeVec, False)
-			print 'g'
+			# print type(node.GetId())
+			# print '---------------'
+			snap.GetNodesAtHop(GSnap, node.GetId(), hop, NodeVec, False)
+			# print 'g'
 			for item in NodeVec:
 				flag = True
-				matrix[node.GetNI()][item] = hop
-				print 'i'
+				if not node.GetId() in matrix:
+					matrix[node.GetId()] = dict()
+				matrix[node.GetId()][item] = hop					
+				# print 'i'
 	print matrix
 
 
