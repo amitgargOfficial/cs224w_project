@@ -3,10 +3,10 @@ Add weights to edges:
 	2. If both users give same ratings then higher weights
 
 Community Detection:
-	1. K-cores
+	1. K-cores (Doesn't Work)
 
 Ranking nodes:
-	1. Pagerank (Use weights?)
+	1. Pagerank (Done)
 	2. ExpertiseRank
 	3. Distance of nodes from current user
 	4. Z-scores
