@@ -87,7 +87,7 @@ for clusterFile in inFiles:
 
 	print "Loaded " + clusterFile
 	# pageRank(G)
-	#centralityMeasures(G)
-	GSnap = snap.LoadEdgeList(snap.PUNGraph, inputDir + clusterFile, 0, 1, '\t')
-	getDistance(GSnap)
+	centralityMeasures(G)
+	# GSnap = snap.LoadEdgeList(snap.PUNGraph, inputDir + clusterFile, 0, 1, '\t')
+	# getDistance(GSnap)
 
