@@ -2,6 +2,15 @@ import snap
 
 graphFile = './Edge_List_Users_Amazon_Instant_Video.txt'
 graph = snap.LoadEdgeList(snap.PUNGraph, graphFile, 0, 1, '\t')
+# print graph.GetEdges()
+
+wtData = {}
+with open(graphFile,'r') as f:
+	for line in f.xreadlines():
+		data = line.split()
+		k = ( int(data[0]), int(data[1]) )
+		v = float(data[2])
+		wtData[k] = v
 
 filename = './out/Edge_List_Users_Amazon_Instant_Video.tree'
 
@@ -12,10 +21,13 @@ N = 400
 def writeToFile(fname, NIdV, idx):
 	subG = snap.GetSubGraph(graph, NIdV)
 	string = ''
-	# if idx==1:
-	# 	print subG.GetEdges()
+	if idx==1:
+		print subG.GetEdges()
 	for edge in subG.Edges():
-		string += '%d\t%d\t%d\n' %(edge.GetSrcNId(), edge.GetDstNId(), 1.0)
+		n1 = edge.GetSrcNId()
+		n2 = edge.GetDstNId()
+		v = wtData[(n1,n2)] if (n1,n2) in wtData else wtData[(n2,n1)]
+		string += '%d\t%d\t%0.4f\n' %(n1, n2, v)
 	with open(fname, 'w') as f:
 		f.write(string)
 	# if idx==399:
