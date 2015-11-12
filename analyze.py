@@ -87,12 +87,6 @@ for clusterFile in inFiles:
 
 	print "Loaded " + clusterFile
 	# pageRank(G)
-
-	GetEigenVectorCentr(Graph, NIdEigenH, Eps = 1e-4, MaxIter = 100)¶
-
-
-
-	
 	centralityMeasures(G)
 	# GSnap = snap.LoadEdgeList(snap.PUNGraph, inputDir + clusterFile, 0, 1, '\t')
 	# getDistance(GSnap)

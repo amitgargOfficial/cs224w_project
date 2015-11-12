@@ -4,11 +4,12 @@ import snap
 import time
 import json
 import math 
-
+from os import listdir
+from os.path import isfile, join
+import shutil
 
 GItems = snap.TUNGraph.New()
 userEdges = []
-years = [2008, 2009]
 asinItems = {} # Key (string) is the asin of the item and value is the nodeId (int) in the graph
 
 GUsers = snap.TUNGraph.New()
@@ -45,14 +46,12 @@ def parseReviews(path, goodRating):
 	usersNodeId = 0
 	for review in parseIterator(path):
 		# Adding nodes to GUsers
-		year = review['reviewTime'].split()
-		if int(year[2]) in years:
-			reviewerId = reviewerIdUsers.get(review['reviewerID'])
-			if reviewerId is None:
-				GUsers.AddNode(usersNodeId)
-				nodeIdUsers[usersNodeId] = review['reviewerID']
-				reviewerIdUsers[review['reviewerID']] = usersNodeId
-				usersNodeId += 1
+		reviewerId = reviewerIdUsers.get(review['reviewerID'])
+		if reviewerId is None:
+			GUsers.AddNode(usersNodeId)
+			nodeIdUsers[usersNodeId] = review['reviewerID']
+			reviewerIdUsers[review['reviewerID']] = usersNodeId
+			usersNodeId += 1
 
 	# Adding edges to GUsers
 	for i in range(0, GUsers.GetNodes()):
@@ -63,9 +62,8 @@ def parseReviews(path, goodRating):
 	reviewersByAsin = {}
 	for review in parseIterator(path):
 	# Adding nodes to GUsers
-		year = review['reviewTime'].split()
 		rating = review['overall']
-		if int(year[2]) in years and rating >= goodRating:
+		if rating >= goodRating:
 			user = reviewerIdUsers[review['reviewerID']]
 			asin = review['asin']
 			if asin in reviewersByAsin:	
@@ -122,12 +120,36 @@ def parseReviews(path, goodRating):
 		
 def main(argv):
 	#directory = '/Users/home/Desktop/Google Drive/Courses/224W/Project/Data/'
-	directory = '/Users/home/Desktop/Google Drive/Courses/224W/Project/Data/'
-	item = 'Cell_Phones_and_Accessories'
-	goodRating = 5
+
+	argv.pop(0)
+	directory = argv.pop(0)
+	directoryReviews = argv.pop(0)
+	directoryItems = argv.pop(0)
+	item = argv.pop(0)
+	goodRating = int(argv.pop(0))
+	yearList = list(argv)
+
+	inFiles = [f for f in listdir(directoryReviews) 
+		if isfile(join(directoryReviews,f)) ]
+
+	fileList = []
+
+	for f in inFiles:
+		for y in yearList:
+			if y in f:
+				fileList.append(directoryReviews+f)
+
+	with open(directoryReviews+'reviews_'+item+'_combined.json', 'w') as outfile:
+	    for fname in fileList:
+	        with open(fname) as infile:
+	            for line in infile:
+	                outfile.write(line)
+
+	with open(directoryReviews+'reviews_'+item+'_combined.json', 'rb') as f_in, gzip.open(directoryReviews+'reviews_'+item+'_combined.json.gz', 'wb') as f_out:
+		shutil.copyfileobj(f_in, f_out)
 
 	# Parsing Items
-	parseItems(directory + 'meta_' + item + '.json.gz')
+	parseItems(directoryItems + 'meta_' + item + '.json.gz')
 	
 	snap.PrintInfo(GItems, 'GItems Information')
 		  
@@ -138,23 +160,21 @@ def main(argv):
 		json.dump(asinItems, f1)
 
 	# Parsing Reviews
-	#parseReviews(directory + 'reviews_' + item + '.json.gz', goodRating)
+	parseReviews(directoryReviews+'reviews_'+item+'_combined.json.gz', goodRating)
 	
 	snap.PrintInfo(GUsers, 'GUsers Information')
 
 	# Saving GUsers
-	#snap.SaveEdgeList(GUsers, directory + 'Edge_List_Users_' + item + '.txt')
-	f = open('Edge_List_Users_' + item + '.txt', 'w')
+	snap.SaveEdgeList(GUsers, directory + 'Edge_List_Users_' + item + '.txt')
+	'''f = open(directory + 'Edge_List_Users_' + item + '.txt', 'w')
 	for edge in GUsers.Edges():
 		srcNId = edge.GetSrcNId()
 		dstNId = edge.GetDstNId()
 		weight = userEdges[srcNId][dstNId][0]/float(userEdges[srcNId][dstNId][1])
-		f.write('%d %d %f\n' % (srcNId, dstNId, weight))
+		f.write('%d %d %f\n' % (srcNId, dstNId, 1.0))'''
 
 	with open(directory + 'Dictionary_Users_' + item + '.txt', 'w') as f2:
 		json.dump(reviewerIdUsers, f2)
 
 if __name__ == '__main__':
-	start_time = time.time()
 	main(sys.argv)
-	print 'Execution time is ' + str(time.time() - start_time) + ' seconds'
