@@ -5,7 +5,7 @@ import json
 import os
 
 directory = '/Users/home/Desktop/Google Drive/Courses/224W/Project/Data/'
-item = 'Books'
+item = 'Cell_Phones_and_Accessories'
 
 fList = []
 

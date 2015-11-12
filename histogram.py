@@ -25,7 +25,7 @@ def parseReviews(path):
 		
 def main(argv):
 	directory = '/Users/home/Desktop/Google Drive/Courses/224W/Project/Data/'
-	item = 'Cell_Phones_and_Accessories'
+	item = 'Amazon_Instant_Video'
 	parseReviews(directory + 'reviews_' + item + '.json.gz')
 	
 if __name__ == '__main__':

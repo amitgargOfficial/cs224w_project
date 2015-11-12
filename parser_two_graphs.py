@@ -62,12 +62,12 @@ def parseReviews(path, goodRating):
 
 	reviewersByAsin = {}
 	for review in parseIterator(path):
-                # Adding nodes to GUsers
-                year = review['reviewTime'].split()
+	# Adding nodes to GUsers
+		year = review['reviewTime'].split()
 		rating = review['overall']
-                if int(year[2]) in years and rating >= goodRating:
+		if int(year[2]) in years and rating >= goodRating:
 			user = reviewerIdUsers[review['reviewerID']]
-                	asin = review['asin']
+			asin = review['asin']
 			if asin in reviewersByAsin:	
 				reviewersByAsin[asin].append((user, rating))		
 			else:
