@@ -1,9 +1,10 @@
 import snap
 import json
 
-item = 'Users_Cell_Phones_and_Accessories'
+directory = '/Users/home/Desktop/Google Drive/Courses/224W/Project/Data/'
+item = 'Cell_Phones_and_Accessories'
 
-G = snap.LoadEdgeList(snap.PUNGraph, 'Edge_List_' + '.txt', 0, 1, '\t')
+G = snap.LoadEdgeList(snap.PUNGraph, directory + 'Edge_List_Users_' + item +'.txt', 0, 1, '\t')
 
 dict = {}
 PRankH = snap.TIntFltH()
