@@ -57,7 +57,7 @@ def parseReviews(path, goodRating):
 	for i in range(0, GUsers.GetNodes()):
 		userEdges.append([])
 		for j in range(0, GUsers.GetNodes()):
-			userEdges[i].append((0.0, 0))
+			userEdges[i].append(0)
 
 	reviewersByAsin = {}
 	for review in parseIterator(path):
@@ -76,12 +76,11 @@ def parseReviews(path, goodRating):
 		for (user1, rating1) in reviewersByAsin[key]:
 			for (user2, rating2) in reviewersByAsin[key]:
 				if user1 != user2:
-					userEdges[user1][user2] = (userEdges[user1][user2][0] + math.pow(3.0 - math.fabs(rating1 - rating2), 2), userEdges[user1][user2][1] + 1)
-					userEdges[user2][user1] = (userEdges[user2][user1][0] + math.pow(3.0 - math.fabs(rating1 - rating2), 2), userEdges[user2][user1][1] + 1)
-	
+					userEdges[user1][user2] += 1
+					userEdges[user2][user1] += 1
 	for user1 in range(0, len(userEdges)):
 		for user2 in range(0, len(userEdges)):
-			if userEdges[user1][user2][1] > 0:
+			if userEdges[user1][user2] > 0:
 				GUsers.AddEdge(user1, user2)
 				
 
@@ -170,7 +169,7 @@ def main(argv):
 	for edge in GUsers.Edges():
 		srcNId = edge.GetSrcNId()
 		dstNId = edge.GetDstNId()
-		weight = userEdges[srcNId][dstNId][0]/float(userEdges[srcNId][dstNId][1])
+		#weight = userEdges[srcNId][dstNId][0]/float(userEdges[srcNId][dstNId][1])
 		f.write('%d %d %f\n' % (srcNId, dstNId, 1.0))'''
 
 	with open(directory + 'Dictionary_Users_' + item + '.txt', 'w') as f2:

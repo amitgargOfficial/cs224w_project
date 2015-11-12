@@ -1,11 +1,11 @@
 #!/bin/bash
 
 item="Cell_Phones_and_Accessories"
-directoryReviews="/Users/home/Desktop/Data/Cell_Phones_and_Accessories/" # Directory of year wise reviews files (Input)
-directoryItems="/Users/home/Desktop/Data/" # Directory of users file (Input)
-directory="/Users/home/Desktop/" # Will automatically create a directory specifically for this item at that location (Output)
+directoryReviews="/Users/shlokadesai/Downloads/Cell_Phones_and_Accessories/" # Directory of year wise reviews files (Input)
+directoryItems="/Users/shlokadesai/Downloads/" # Directory of users file (Input)
+directory="/Users/shlokadesai/Documents/cs224w_project/" # Will automatically create a directory specifically for this item at that location (Output)
 goodRating="3"
-year=(1999 2000) # Mention years for parser_two_graphs.py file
+year=(2007 2008) # Mention years for parser_two_graphs.py file
 
 directory=$directory$item"/"
 mkdir -p $directory
