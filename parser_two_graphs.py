@@ -8,7 +8,7 @@ import math
 
 GItems = snap.TUNGraph.New()
 userEdges = []
-years = [2011, 2012]
+years = [2008, 2009]
 asinItems = {} # Key (string) is the asin of the item and value is the nodeId (int) in the graph
 
 GUsers = snap.TUNGraph.New()
@@ -122,9 +122,9 @@ def parseReviews(path, goodRating):
 		
 def main(argv):
 	#directory = '/Users/home/Desktop/Google Drive/Courses/224W/Project/Data/'
-	directory = '/Users/shlokadesai/Downloads/'
-	item = 'Amazon_Instant_Video'
-	goodRating = 3
+	directory = '/Users/home/Desktop/Google Drive/Courses/224W/Project/Data/'
+	item = 'Cell_Phones_and_Accessories'
+	goodRating = 5
 
 	# Parsing Items
 	parseItems(directory + 'meta_' + item + '.json.gz')
@@ -138,7 +138,7 @@ def main(argv):
 		json.dump(asinItems, f1)
 
 	# Parsing Reviews
-	parseReviews(directory + 'reviews_' + item + '.json.gz', goodRating)
+	#parseReviews(directory + 'reviews_' + item + '.json.gz', goodRating)
 	
 	snap.PrintInfo(GUsers, 'GUsers Information')
 
