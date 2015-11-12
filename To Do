@@ -8,7 +8,7 @@ Community Detection:
 Ranking nodes:
 	1. Pagerank (Done)
 	2. ExpertiseRank
-	3. Distance of nodes from current user
+	3. Distance of nodes from current user (Done)
 	4. Z-scores
 
 Link Prediction
