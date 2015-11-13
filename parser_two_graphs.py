@@ -10,7 +10,8 @@ import shutil
 from collections import Counter
 
 GItems = snap.TUNGraph.New()
-userEdges = []
+# userEdges = []
+userEdges = Counter()
 asinItems = {} # Key (string) is the asin of the item and value is the nodeId (int) in the graph
 
 GUsers = snap.TUNGraph.New()
@@ -57,11 +58,9 @@ def parseReviews(path, goodRating):
 
 	# Adding edges to GUsers
 	print "Mode 2"
-	print GUsers.GetNodes()
-	for i in range(0, GUsers.GetNodes()):
-		userEdges.append(Counter())
-		# for j in range(0, GUsers.GetNodes()):
-		# 	userEdges[i].append(0)
+	# print GUsers.GetNodes()
+	# for i in range(0, GUsers.GetNodes()):
+	# 	userEdges.append(Counter())
 
 	reviewersByAsin = {}
 	print "Mode 3"
@@ -81,15 +80,22 @@ def parseReviews(path, goodRating):
 	for key in reviewersByAsin:
 		for (user1, rating1) in reviewersByAsin[key]:
 			for (user2, rating2) in reviewersByAsin[key]:
-				if user1 != user2:
-					userEdges[user1][user2] += 1
-					userEdges[user2][user1] += 1
+				if user1 < user2:
+					userEdges[(user1,user2)] += 1
+				elif user1 > user2:
+					userEdges[(user2,user1)] += 1
+					# userEdges[user1][user2] += 1
+					# userEdges[user2][user1] += 1
 
 	print "Mode 5"
-	for user1 in range(0, len(userEdges)):
-		for user2 in range(0, len(userEdges)):
-			if userEdges[user1][user2] > 0:
-				GUsers.AddEdge(user1, user2)
+	print len(userEdges)
+	for (user1, user2),val in userEdges.iteritems():
+		if val > 0:
+			GUsers.AddEdge(user1, user2)
+	# for user1 in range(0, len(userEdges)):
+	# 	for user2 in range(0, len(userEdges)):
+	# 		if userEdges[user1][user2] > 0:
+	# 			GUsers.AddEdge(user1, user2)
 				
 
 	#users = []
