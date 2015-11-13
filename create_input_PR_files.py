@@ -1,20 +1,26 @@
 import snap
+from sys import argv
 
-graphFile = './Edge_List_Users_Amazon_Instant_Video.txt'
+script, treeFile, graphFile, outputDirectory = argv
+
 graph = snap.LoadEdgeList(snap.PUNGraph, graphFile, 0, 1, '\t')
+
 # print graph.GetEdges()
 
 wtData = {}
 with open(graphFile,'r') as f:
 	for line in f.xreadlines():
+		if line[0] == '#':
+			continue
 		data = line.split()
-		k = ( int(data[0]), int(data[1]) )
-		v = float(data[2])
+		k = (int(data[0]), int(data[1]))
+		try:
+			v = float(data[2])
+		except:
+			v = 1.0
 		wtData[k] = v
 
-filename = './out/Edge_List_Users_Amazon_Instant_Video.tree'
-
-outFilePrefix = './UnanalyzedClusters/cluster'
+outFilePrefix = outputDirectory+'Cluster_'
 # outFilePrefix = './input_PR/cluster'
 N = 400
 
@@ -22,26 +28,16 @@ def writeToFile(fname, NIdV, idx):
 	subG = snap.GetSubGraph(graph, NIdV)
 	string = ''
 	if idx==1:
-		print subG.GetEdges()
+		pass
+		#print subG.GetEdges()
 	for edge in subG.Edges():
 		n1 = edge.GetSrcNId()
 		n2 = edge.GetDstNId()
-		v = wtData[(n1,n2)] if (n1,n2) in wtData else wtData[(n2,n1)]
-		string += '%d\t%d\t%0.4f\n' %(n1, n2, v)
+		string += '%d\t%d\n' %(n1, n2)
 	with open(fname, 'w') as f:
 		f.write(string)
-	# if idx==399:
-	# 	print len(NIdV), '\t', subG.GetNodes(), '\t', subG.GetEdges()
-	# snap.SaveEdgeList(subG, fname)
-	# FOut = snap.TFOut(fname)
-	# subG.Save(FOut)
-	# FOut.Flush()
-	# if idx==N:
-	# print subG.GetNodes()
-	# print subG.GetEdges()
-	# print snap.CntDegNodes(subG, 0)
 
-with open(filename, 'r') as inputFile:
+with open(treeFile, 'r') as inputFile:
 	idx = 1
 	# toWrite = ''
 	NIdV = snap.TIntV()
