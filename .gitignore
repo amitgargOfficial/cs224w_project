@@ -11,6 +11,6 @@ Cell_Phones_and_Accessories/*
 *.png
 *.hist
 output_PR/
-./Infomap
+Infomap
 workDir.sh
 *.sh~
