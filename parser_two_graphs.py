@@ -7,6 +7,7 @@ import math
 from os import listdir
 from os.path import isfile, join
 import shutil
+from collections import Counter
 
 GItems = snap.TUNGraph.New()
 userEdges = []
@@ -44,6 +45,7 @@ def parseItems(path):
 def parseReviews(path, goodRating):
 	# Adding nodes to GUsers
 	usersNodeId = 0
+	print "Mode 1"
 	for review in parseIterator(path):
 		# Adding nodes to GUsers
 		reviewerId = reviewerIdUsers.get(review['reviewerID'])
@@ -54,12 +56,15 @@ def parseReviews(path, goodRating):
 			usersNodeId += 1
 
 	# Adding edges to GUsers
+	print "Mode 2"
+	print GUsers.GetNodes()
 	for i in range(0, GUsers.GetNodes()):
-		userEdges.append([])
-		for j in range(0, GUsers.GetNodes()):
-			userEdges[i].append(0)
+		userEdges.append(Counter())
+		# for j in range(0, GUsers.GetNodes()):
+		# 	userEdges[i].append(0)
 
 	reviewersByAsin = {}
+	print "Mode 3"
 	for review in parseIterator(path):
 	# Adding nodes to GUsers
 		rating = review['overall']
@@ -71,13 +76,16 @@ def parseReviews(path, goodRating):
 			else:
 				reviewersByAsin[asin] = []
 				reviewersByAsin[asin].append((user, rating))    
-			
+		
+	print "Mode 4"	
 	for key in reviewersByAsin:
 		for (user1, rating1) in reviewersByAsin[key]:
 			for (user2, rating2) in reviewersByAsin[key]:
 				if user1 != user2:
 					userEdges[user1][user2] += 1
 					userEdges[user2][user1] += 1
+
+	print "Mode 5"
 	for user1 in range(0, len(userEdges)):
 		for user2 in range(0, len(userEdges)):
 			if userEdges[user1][user2] > 0:
