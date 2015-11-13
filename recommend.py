@@ -1,8 +1,10 @@
 import json
-import snap 
+import snap
+from os import listdir
+from os.path import isfile, join
 from sys import argv
 
-script, directory, item = argv
+script, directory, item, inputDirectory = argv
 
 graph = 'Users'
 
@@ -18,9 +20,15 @@ with open(directory + 'Eigen_Value_' + graph + '_' + item +'.txt', 'r') as infil
 	eigen_centrality = json.load(infile2)
 
 # Read in nodesAtHop
-#nodesAtHop = {} 
-#with open(directory + 'NodeAtHop_' + graph + '_' + item + '.txt', 'r') as infile3:
-#	nodesAtHop = json.load(infile3)
+inFiles = [f for f in listdir(inputDirectory) 
+        if isfile(join(inputDirectory,f)) ]
+
+
+nodesAtHop = []
+for filename in inFiles:
+        
+with open(directory + 'NodeAtHop_' + graph + '_' + item + '.txt', 'r') as infile3:
+	nodesAtHop = json.load(infile3)
 
 filename = directory + '/Clusters_Users/Edge_List_' + graph + '_' + item + '.tree'
 
@@ -31,9 +39,7 @@ nodeToCommunities = {}
 N = 400
 with open(filename, 'r') as inputFile:
         idx = 1
-        # toWrite = ''
         NIdV = snap.TIntV()
-        minVal = 1000000
         for line in inputFile.readlines():
                 if line[0] == '#':
                         continue
@@ -58,4 +64,7 @@ with open(directory + '_User_Item_' + item + '.txt', 'r') as infile4:
 usersGraph = snap.LoadEdgeList(snap.PUNGraph, directory + 'Edge_List_' + graph + '_' + item +'.txt', 0, 1, '\t')
 itemsGraph = snap.LoadEdgeList(snap.PUNGraph, directory + 'Edge_List_Items_' + item +'.txt', 0, 1, '\t')
 
+# Recommend 
 
+
+# Compare against ground truth 
