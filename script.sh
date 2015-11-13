@@ -1,15 +1,12 @@
 #!/bin/bash
 
 TotalTime="$(date +%s)"
-
+source workDir.sh
 red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
 item='Cell_Phones_and_Accessories'
-directoryReviews='/Users/home/Desktop/Data/Cell_Phones_and_Accessories/' # Directory of year wise reviews files (Input)
-directoryItems='/Users/home/Desktop/Data/' # Directory of users file (Input)
-directory='/Users/home/Desktop/' # Will automatically create a directory specifically for this item at that location (Output)
 goodRating="5"
 year=(2008 2009) # Mention years for parser_two_graphs.py file
 
@@ -35,7 +32,7 @@ infomapItemsInput=$directory"Edge_List_Items_"$item".txt"
 infomapItemsOutput=$directory
 
 T="$(date +%s)"
-./Infomap $infomapItemsInput $infomapItemsOutput -z -2 -u
+Infomap $infomapItemsInput $infomapItemsOutput -z -2 -u
 T="$(($(date +%s)-T))"
 
 echo "${green}Completed Infomap for Items in ${T} seconds${reset}"
@@ -44,7 +41,7 @@ infomapUsersInput=$directory"Edge_List_Users_"$item".txt"
 infomapUsersOutput=$directory
 
 T="$(date +%s)"
-./Infomap $infomapUsersInput $infomapUsersOutput -z -2 -u
+Infomap $infomapUsersInput $infomapUsersOutput -z -2 -u
 T="$(($(date +%s)-T))"
 
 echo "${green}Completed Infomap for Users in ${T} seconds${reset}"
@@ -92,15 +89,13 @@ T="$(date +%s)"
 python nodes_at_hop.py $clustersUsersOutputDirectory $nodesAtHopUsersOutput
 T="$(($(date +%s)-T))"
 
-
-
 echo "${green}Completed Finding Nodes at Hop for Users in ${T} seconds${reset}"
 
-T="$(date +%s)"
-python recommend.py $directory $item
-T="$(($(date +%s)-T))"
+# T="$(date +%s)"
+# python recommend.py $directory $item
+# T="$(($(date +%s)-T))"
 
-echo "${green}Completed recommend.py in ${T} seconds${reset}"
+# echo "${green}Completed recommend.py in ${T} seconds${reset}"
 
 
 TotalTime="$(($(date +%s)-TotalTime))"
