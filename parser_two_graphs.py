@@ -10,7 +10,6 @@ import shutil
 from collections import Counter
 
 GItems = snap.TUNGraph.New()
-# userEdges = []
 userEdges = Counter()
 asinItems = {} # Key (string) is the asin of the item and value is the nodeId (int) in the graph
 
@@ -27,26 +26,32 @@ def parseIterator(path):
 def parseItems(path):
 	# Adding nodes to GItems
 	itemsNodeId = 0
+	edges = set()
 	for item in parseIterator(path):
 		# Adding nodes to GItems
 		GItems.AddNode(itemsNodeId)
 		asinItems[item['asin']] = itemsNodeId
 		itemsNodeId +=1
-
-	# Adding edges to GItems
-	for itemSrc in parseIterator(path):
+		# Store edges for later use
 		try: # Some items do not have related or bought_together
-			related = itemSrc['related']
+			related = item['related']
 			for itemDstAsin in related['bought_together']:
-				if asinItems[itemDstAsin] is not None: # Some bought_together items are not present in nodes
-					GItems.AddEdge(asinItems[itemDstAsin], asinItems[itemSrc['asin']])
+				edges.add((item['asin'], itemDstAsin))
 		except KeyError:
 			pass
+
+	# Adding edges to GItems
+	for item1,item2 in edges:
+		node1 = asinItems[item1]
+		try:
+			node2 = asinItems[item2]
+		except KeyError:
+			continue
+		GItems.AddEdge(node1, node2)
 
 def parseReviews(path, goodRating):
 	# Adding nodes to GUsers
 	usersNodeId = 0
-	print "Mode 1"
 	for review in parseIterator(path):
 		# Adding nodes to GUsers
 		reviewerId = reviewerIdUsers.get(review['reviewerID'])
@@ -56,14 +61,7 @@ def parseReviews(path, goodRating):
 			reviewerIdUsers[review['reviewerID']] = usersNodeId
 			usersNodeId += 1
 
-	# Adding edges to GUsers
-	print "Mode 2"
-	# print GUsers.GetNodes()
-	# for i in range(0, GUsers.GetNodes()):
-	# 	userEdges.append(Counter())
-
 	reviewersByAsin = {}
-	print "Mode 3"
 	for review in parseIterator(path):
 	# Adding nodes to GUsers
 		rating = review['overall']
@@ -75,8 +73,7 @@ def parseReviews(path, goodRating):
 			else:
 				reviewersByAsin[asin] = []
 				reviewersByAsin[asin].append((user, rating))    
-		
-	print "Mode 4"	
+
 	for key in reviewersByAsin:
 		for (user1, rating1) in reviewersByAsin[key]:
 			for (user2, rating2) in reviewersByAsin[key]:
@@ -84,19 +81,10 @@ def parseReviews(path, goodRating):
 					userEdges[(user1,user2)] += 1
 				elif user1 > user2:
 					userEdges[(user2,user1)] += 1
-					# userEdges[user1][user2] += 1
-					# userEdges[user2][user1] += 1
 
-	print "Mode 5"
-	print len(userEdges)
 	for (user1, user2),val in userEdges.iteritems():
-		if val > 0:
-			GUsers.AddEdge(user1, user2)
-	# for user1 in range(0, len(userEdges)):
-	# 	for user2 in range(0, len(userEdges)):
-	# 		if userEdges[user1][user2] > 0:
-	# 			GUsers.AddEdge(user1, user2)
-				
+		if val > 0: # Set the minimum number of shared reviews
+			GUsers.AddEdge(user1, user2)	
 
 	#users = []
 	#reviews = parseIterator(path)
@@ -132,8 +120,6 @@ def parseReviews(path, goodRating):
 	#		break
 		
 def main(argv):
-	#directory = '/Users/home/Desktop/Google Drive/Courses/224W/Project/Data/'
-
 	argv.pop(0)
 	directory = argv.pop(0)
 	directoryReviews = argv.pop(0)
