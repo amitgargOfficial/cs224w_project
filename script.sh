@@ -22,9 +22,12 @@ T="$(($(date +%s)-T))"
 
 echo "${green}Completed Parsing in ${T} seconds${reset}"
 
+
 T="$(date +%s)"
 python centrality.py $directory $item
 T="$(($(date +%s)-T))"
+python centrality.py $directory $item
+
 
 echo "${green}Completed Finding Centrality for Items and Users in ${T} seconds${reset}"
 
@@ -83,13 +86,24 @@ echo "${green}Completed Finding Nodes at Hop for Items in ${T} seconds${reset}"
 nodesAtHopUsersOutput=$directory"Nodes_at_Hop_Users_Clusters/"
 
 mkdir -p $nodesAtHopUsersOutput
+./Infomap $infomapUsersInput $infomapUsersOutput -z -2 -u
 
 T="$(date +%s)"
 python nodes_at_hop.py $clustersUsersOutputDirectory $nodesAtHopUsersOutput
 T="$(($(date +%s)-T))"
 
+
+
 echo "${green}Completed Finding Nodes at Hop for Users in ${T} seconds${reset}"
 
+T="$(date +%s)"
+python recommend.py $directory $item
+T="$(($(date +%s)-T))"
+
+echo "${green}Completed recommend.py in ${T} seconds${reset}"
+
+
 TotalTime="$(($(date +%s)-TotalTime))"
+
 
 echo "${red}Total Completion Time is ${TotalTime} seconds${reset}"

@@ -49,7 +49,7 @@ def parseItems(path):
 			continue
 		GItems.AddEdge(node1, node2)
 
-def parseReviews(path, goodRating):
+def parseReviews(path, goodRating, userItemsFileName):
 	# Adding nodes to GUsers
 	usersNodeId = 0
 	for review in parseIterator(path):
@@ -61,6 +61,8 @@ def parseReviews(path, goodRating):
 			reviewerIdUsers[review['reviewerID']] = usersNodeId
 			usersNodeId += 1
 
+	userToItems = {}
+
 	reviewersByAsin = {}
 	for review in parseIterator(path):
 	# Adding nodes to GUsers
@@ -68,11 +70,18 @@ def parseReviews(path, goodRating):
 		if rating >= goodRating:
 			user = reviewerIdUsers[review['reviewerID']]
 			asin = review['asin']
-			if asin in reviewersByAsin:	
-				reviewersByAsin[asin].append((user, rating))		
-			else:
+			if not asin in reviewersByAsin:	
 				reviewersByAsin[asin] = []
-				reviewersByAsin[asin].append((user, rating))    
+			reviewersByAsin[asin].append((user, rating))		
+
+			if not user in userToItems:
+				userToItems[user] = []
+			userToItems[user].append(asin)
+
+	
+	with open(userItemsFileName, 'w') as outfile:
+		json.dump(userToItems, outfile)
+
 
 	for key in reviewersByAsin:
 		for (user1, rating1) in reviewersByAsin[key]:
@@ -158,19 +167,14 @@ def main(argv):
 	with open(directory + 'Dictionary_Items_' + item + '.txt', 'w') as f1:
 		json.dump(asinItems, f1)
 
+	userItemsFileName = directory + '_User_Item_' + item + '.txt'
 	# Parsing Reviews
-	parseReviews(directoryReviews+'reviews_'+item+'_combined.json.gz', goodRating)
+	parseReviews(directoryReviews+'reviews_'+item+'_combined.json.gz', goodRating, userItemsFileName)
 	
 	snap.PrintInfo(GUsers, 'GUsers Information')
 
 	# Saving GUsers
 	snap.SaveEdgeList(GUsers, directory + 'Edge_List_Users_' + item + '.txt')
-	'''f = open(directory + 'Edge_List_Users_' + item + '.txt', 'w')
-	for edge in GUsers.Edges():
-		srcNId = edge.GetSrcNId()
-		dstNId = edge.GetDstNId()
-		#weight = userEdges[srcNId][dstNId][0]/float(userEdges[srcNId][dstNId][1])
-		f.write('%d %d %f\n' % (srcNId, dstNId, 1.0))'''
 
 	with open(directory + 'Dictionary_Users_' + item + '.txt', 'w') as f2:
 		json.dump(reviewerIdUsers, f2)
