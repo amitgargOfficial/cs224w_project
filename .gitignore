@@ -4,3 +4,4 @@
 *.json
 out/*
 input_PR/*
+scrip.sh
