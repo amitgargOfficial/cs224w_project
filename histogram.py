@@ -24,7 +24,7 @@ def parseReviews(path):
 		print str(yearlist[i]) + " - " + str(countlist[i])
 		
 def main(argv):
-	directory = '/Users/home/Desktop/Google Drive/Courses/224W/Project/Data/'
+	directory = '/Users/home/Desktop/Data/'
 	item = 'Amazon_Instant_Video'
 	parseReviews(directory + 'reviews_' + item + '.json.gz')
 	

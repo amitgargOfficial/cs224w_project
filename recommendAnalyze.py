@@ -22,11 +22,11 @@ def findNewEdges():
 	with open(directoryReviews + 'reviews_' + item + '_' + year + '.json', 'rb') as f_in, gzip.open(directoryReviews + 'reviews_' + item + '_' + year + '.json.gz', 'wb') as f_out:
 		shutil.copyfileobj(f_in, f_out)
 	for review in parseIterator(directoryReviews + 'reviews_' + item + '_' + year + '.json.gz'):
-		queryUser = review['reviewerID']
-		if queryUser in reviewerIdUsers: # Check if user in the years we predicted from
-			if not queryUser in newEdges:
-				newEdges[queryUser] = []
-			newEdges[queryUser].append(asinItems[review['asin']])
+		if review['reviewerID'] in reviewerIdUsers: # Check if user in the years we predicted from
+			nodeNumber = reviewerIdUsers[review['reviewerID']]
+			if not nodeNumber in newEdges:
+				newEdges[nodeNumber] = []
+			newEdges[nodeNumber].append(review['asin'])
 
 def checkEdges():
 	with open(directory + 'recommendations','rb') as f:
@@ -37,7 +37,8 @@ def checkEdges():
 	for cluster in range(0, len(predictions)):
 		commScores = []
 		commPreds = []
-		for user, items in predictions[cluster].iteritems():
+		for userStr, items in predictions[cluster].iteritems():
+			user = int(userStr)
 			if not user in newEdges:
 				groundTruth = set()
 			else:
@@ -57,6 +58,7 @@ def checkEdges():
 	commScores = [sum(x)*100.0/(0.000001+len(x)) for x in allScores]
 	commPreds = [sum(x)/(0.000001+len(x)) for x in allPreds]
 	print zip(commScores, commPreds)
+	print sum(commScores)/len(commScores)
 	pyplot.plot(range(len(predictions)), commScores, 'b-', label = 'Correct')
 	#pyplot.plot(range(len(predictions)), commPreds, 'r--', label = 'Correct')
 	pyplot.title('Cluster vs. Percentage of Predictions')

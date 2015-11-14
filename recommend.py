@@ -5,7 +5,6 @@ from os.path import isfile, join
 from sys import argv
 import pickle
 
-print argv
 script, directory, item, inputDirectory = argv
 
 graph = 'Users'
@@ -86,7 +85,7 @@ def updateDict(scores, hopDistance, queryUser, targetUser, items, alreadyBought)
         scores[item] += scale*dotProduct([pr,eig])
     return
     
-N = 10 # How many predictions per user
+N = 2 # How many predictions per user
 
 # Recommend
 userRecommendations = []

@@ -8,10 +8,10 @@ red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
-item='Cell_Phones_and_Accessories'
+item='Amazon_Instant_Video'
 goodRating="5"
-year=(2008 2009) # Mention years for parser_two_graphs.py file
-recommendYear=(2010)
+year=(2011 2012) # Mention years for parser_two_graphs.py file
+recommendYear=(2013)
 
 directory=$directory$item"/"
 mkdir -p $directory
@@ -94,7 +94,7 @@ T="$(date +%s)"
 python recommend.py $directory $item $nodesAtHopUsersOutput
 T="$(($(date +%s)-T))"
 
-echo "${green}Completed Recommendations in ${T} seconds${reset}"
+echo "${green}Completed Finding Recommendations in ${T} seconds${reset}"
 
 T="$(date +%s)"
 python recommendAnalyze.py $directory $directoryReviews $item $recommendYear
