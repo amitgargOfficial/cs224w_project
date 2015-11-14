@@ -5,6 +5,7 @@ from os.path import isfile, join
 from sys import argv
 import pickle
 
+print argv
 script, directory, item, inputDirectory = argv
 
 graph = 'Users'
@@ -23,7 +24,7 @@ with open(directory + 'Eigen_Value_' + graph + '_' + item +'.txt', 'r') as infil
 # Read in nodesAtHop
 inFiles = [f for f in listdir(inputDirectory) 
     if isfile(join(inputDirectory,f)) ]
-inFiles = ['cluster_100']
+# inFiles = ['cluster_100']
 
 nodesAtHop = []
 for filename in inFiles:
@@ -102,9 +103,6 @@ for community in nodesAtHop:
         srted = sorted(scores.iteritems(), key=lambda x:(-x[1],x[0]))
         topN = [x[0] for x in srted[:min(N,len(srted))]]
         userRecommendations[-1][queryUser] = topN
-        if(queryUser == "6586"):
-            print scores
-print userRecommendations
 with open(directory + 'recommendations', 'wb') as outfile:
     pickle.dump(userRecommendations, outfile)
 # Compare against ground truth 

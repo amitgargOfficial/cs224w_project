@@ -80,7 +80,7 @@ mkdir -p $directory
 
 # echo "${green}Completed Finding Nodes at Hop for Items in ${T} seconds${reset}"
 
-# nodesAtHopUsersOutput=$directory"Nodes_at_Hop_Users_Clusters/"
+nodesAtHopUsersOutput=$directory"Nodes_at_Hop_Users_Clusters/"
 
 # mkdir -p $nodesAtHopUsersOutput
 
@@ -90,11 +90,11 @@ mkdir -p $directory
 
 # echo "${green}Completed Finding Nodes at Hop for Users in ${T} seconds${reset}"
 
-# T="$(date +%s)"
-# python recommend.py $directory $item $nodesAtHopUsersOutput
-# T="$(($(date +%s)-T))"
+T="$(date +%s)"
+python recommend.py $directory $item $nodesAtHopUsersOutput
+T="$(($(date +%s)-T))"
 
-# echo "${green}Completed Recommendations in ${T} seconds${reset}"
+echo "${green}Completed Recommendations in ${T} seconds${reset}"
 
 T="$(date +%s)"
 python recommendAnalyze.py $directory $directoryReviews $item $recommendYear
