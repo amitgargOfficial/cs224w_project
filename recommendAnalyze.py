@@ -63,7 +63,7 @@ def checkEdges():
 	commPreds = [sum(x)/(0.000001+len(x)) for x in allPreds]
 	X = [commScores[i]*allUsers[i] for i in range(len(allUsers))]
 	# print zip(commScores, commPreds)
-	print sum(X)/len(commScores)
+	print sum(X)/sum(allUsers)
 	pyplot.plot(range(len(predictions)), commScores, 'b-', label = 'Correct')
 	#pyplot.plot(range(len(predictions)), commPreds, 'r--', label = 'Correct')
 	pyplot.title('Cluster vs. Percentage of Predictions')
