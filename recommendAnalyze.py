@@ -34,9 +34,11 @@ def checkEdges():
 
 	allScores = []
 	allPreds = []
+	allUsers = []
 	for cluster in range(0, len(predictions)):
 		commScores = []
 		commPreds = []
+		commUsers = 0.0
 		for userStr, items in predictions[cluster].iteritems():
 			user = int(userStr)
 			if not user in newEdges:
@@ -52,20 +54,24 @@ def checkEdges():
 				score = len(matched)*1.0/len(itemSet)
 			commScores.append(score)
 			commPreds.append(len(itemSet))
+			commUsers += 1
 		allScores.append(commScores)
+		allUsers.append(commUsers)
 		allPreds.append(commPreds)
 	
 	commScores = [sum(x)*100.0/(0.000001+len(x)) for x in allScores]
 	commPreds = [sum(x)/(0.000001+len(x)) for x in allPreds]
-	print zip(commScores, commPreds)
-	print sum(commScores)/len(commScores)
+	X = [commScores[i]*allUsers[i] for i in range(len(allUsers))]
+	# print zip(commScores, commPreds)
+	print sum(X)/sum(allUsers)
 	pyplot.plot(range(len(predictions)), commScores, 'b-', label = 'Correct')
 	#pyplot.plot(range(len(predictions)), commPreds, 'r--', label = 'Correct')
 	pyplot.title('Cluster vs. Percentage of Predictions')
 	pyplot.xlabel('Cluster')
 	pyplot.ylabel('Percentage of Correct Predictions')
 	pyplot.legend(loc = 'upper right')
-	pyplot.show()
+	# pyplot.show()
+	pyplot.savefig('Rec.png')
 
 def main(argv):
 	findNewEdges()
