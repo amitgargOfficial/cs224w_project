@@ -76,7 +76,7 @@ def parseReviews(path, goodRating, userItemsFileName):
 
 			if not user in userToItems:
 				userToItems[user] = []
-			userToItems[user].append(asin)
+			userToItems[user].append(asinItems[asin])
 
 	
 	with open(userItemsFileName, 'w') as outfile:

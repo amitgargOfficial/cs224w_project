@@ -4,8 +4,9 @@ from os import listdir
 from os.path import isfile, join
 from sys import argv
 import pickle
+import math
 
-script, directory, item, inputDirectory = argv
+script, directory, item, inputDirectoryUsers, inputDirectoryItems = argv
 
 graph = 'Users'
 
@@ -21,15 +22,26 @@ with open(directory + 'Eigen_Value_' + graph + '_' + item +'.txt', 'r') as infil
     eigen_centrality = json.load(infile2)
 
 # Read in nodesAtHop
-inFiles = [f for f in listdir(inputDirectory) 
-    if isfile(join(inputDirectory,f)) ]
+inFiles = [f for f in listdir(inputDirectoryUsers) 
+    if isfile(join(inputDirectoryUsers,f)) ]
 # inFiles = ['cluster_100']
 
 nodesAtHop = []
 for filename in inFiles:
-    with open(inputDirectory + filename, 'r') as infile3:
+    with open(inputDirectoryUsers + filename, 'r') as infile3:
         curCluster = json.load(infile3)
     nodesAtHop.append(curCluster)
+
+# Read in nodesAtHop
+inFiles = [f for f in listdir(inputDirectoryItems) 
+    if isfile(join(inputDirectoryItems,f)) ]
+# inFiles = ['cluster_100']
+
+nodesAtHopItems = []
+for filename in inFiles:
+    with open(inputDirectoryItems + filename, 'r') as infile4:
+        curCluster = json.load(infile4)
+    nodesAtHopItems.append(curCluster)
 
 # filename = directory + '/Clusters_Users/Edge_List_' + graph + '_' + item + '.tree'
 
@@ -77,16 +89,45 @@ def updateDict(scores, hopDistance, queryUser, targetUser, items, alreadyBought)
     scale = 1.0/hopDistance
     pr = pagerank[targetUser]
     eig = eigen_centrality[targetUser]
+    numThrownAway = 0
     for item in items:
         if item in alreadyBought:
+            numThrownAway += 1
             continue
         if not item in scores:
             scores[item] = 0.0
         scores[item] += scale*dotProduct([pr,eig])
+    # print 100.0*numThrownAway/len(items)
     return
     
 N = 2 # How many predictions per user
 
+itemToCommunityDict = {} 
+for community in nodesAtHopItems:
+    for item in community:
+        if not item in itemToCommunityDict:
+            itemToCommunityDict[item] = set()
+        itemToCommunityDict[item].update(community.keys())
+# print itemToCommunityDict.keys()
+itemWeight = 5.0
+
+def updateByItemCommunity(scores, distance, referenceItems, alreadyBought):
+    scale = 1/(1.0+distance)
+    for item in referenceItems:
+        # print item
+        if item not in itemToCommunityDict:
+            continue
+        simItems = itemToCommunityDict[item]
+        # print simItems
+        for simItem in simItems:
+            # print simItem
+            if simItem in alreadyBought:
+                continue
+            if not simItem in scores:
+                scores[simItem] = 0.0
+            scores[simItem] += scale*itemWeight
+            # print simItem
+        
 # Recommend
 userRecommendations = []
 for community in nodesAtHop:
@@ -99,6 +140,8 @@ for community in nodesAtHop:
             boughtItems = userToItems[targetUser]
             hopDistance = allNbrs[targetUser]
             updateDict(scores, hopDistance, queryUser, targetUser, boughtItems, alreadyBought)
+            updateByItemCommunity(scores, hopDistance, boughtItems, alreadyBought)
+        updateByItemCommunity(scores, 0, alreadyBought, alreadyBought)
         srted = sorted(scores.iteritems(), key=lambda x:(-x[1],x[0]))
         topN = [x[0] for x in srted[:min(N,len(srted))]]
         userRecommendations[-1][queryUser] = topN
