@@ -18,6 +18,9 @@ GUsers = snap.TUNGraph.New()
 nodeIdUsers = {} # Key is the nodeId (int) in the graph and value (string) is the reviewerID of the user
 reviewerIdUsers = {} # Key (string) is the reviewerID of the user and value is the nodeId (int) in the graph
 
+GCombined = snap.TUNGraph.New()
+combinedNodeId = 0
+
 def parseIterator(path):
 	g = gzip.open(path, 'r')
 	for l in g:
@@ -25,11 +28,13 @@ def parseIterator(path):
 
 def parseItems(path):
 	# Adding nodes to GItems
+	global combinedNodeId
 	itemsNodeId = 0
 	edges = set()
 	for item in parseIterator(path):
 		# Adding nodes to GItems
 		GItems.AddNode(itemsNodeId)
+		GCombined.AddNode(itemsNodeId)
 		asinItems[item['asin']] = itemsNodeId
 		itemsNodeId +=1
 		# Store edges for later use
@@ -48,18 +53,26 @@ def parseItems(path):
 		except KeyError:
 			continue
 		GItems.AddEdge(node1, node2)
+		GCombined.AddEdge(node1, node2)
 
+	combinedNodeId = itemsNodeId + 1
+	
 def parseReviews(path, goodRating, userItemsFileName):
 	# Adding nodes to GUsers
 	usersNodeId = 0
+	global combinedNodeId
+	nodeIdToCombinedNodeId = {}
 	for review in parseIterator(path):
 		# Adding nodes to GUsers
 		reviewerId = reviewerIdUsers.get(review['reviewerID'])
 		if reviewerId is None:
 			GUsers.AddNode(usersNodeId)
+			GCombined.AddNode(combinedNodeId)
+			nodeIdToCombinedNodeId[usersNodeId] = combinedNodeId
 			nodeIdUsers[usersNodeId] = review['reviewerID']
 			reviewerIdUsers[review['reviewerID']] = usersNodeId
 			usersNodeId += 1
+			combinedNodeId += 1
 
 	userToItems = {}
 
@@ -77,7 +90,7 @@ def parseReviews(path, goodRating, userItemsFileName):
 			if not user in userToItems:
 				userToItems[user] = []
 			userToItems[user].append(asinItems[asin])
-
+			GCombined.AddEdge(user, asinItems[asin])
 	
 	with open(userItemsFileName, 'w') as outfile:
 		json.dump(userToItems, outfile)
@@ -93,7 +106,8 @@ def parseReviews(path, goodRating, userItemsFileName):
 
 	for (user1, user2),val in userEdges.iteritems():
 		if val > 0: # Set the minimum number of shared reviews
-			GUsers.AddEdge(user1, user2)	
+			GUsers.AddEdge(user1, user2)
+			GCombined.AddEdge(nodeIdToCombinedNodeId[user1], nodeIdToCombinedNodeId[user2])
 
 	#users = []
 	#reviews = parseIterator(path)
@@ -160,7 +174,7 @@ def main(argv):
 	parseItems(directoryItems + 'meta_' + item + '.json.gz')
 	
 	snap.PrintInfo(GItems, 'GItems Information')
-		  
+	
 	# Saving GItems
 	snap.SaveEdgeList(GItems, directory + 'Edge_List_Items_' + item + '.txt')
 
@@ -168,6 +182,7 @@ def main(argv):
 		json.dump(asinItems, f1)
 
 	userItemsFileName = directory + '_User_Item_' + item + '.txt'
+	
 	# Parsing Reviews
 	parseReviews(directoryReviews+'reviews_'+item+'_combined.json.gz', goodRating, userItemsFileName)
 	
@@ -178,6 +193,11 @@ def main(argv):
 
 	with open(directory + 'Dictionary_Users_' + item + '.txt', 'w') as f2:
 		json.dump(reviewerIdUsers, f2)
+		
+	snap.PrintInfo(GCombined, 'GCombined Information')
+
+	snap.SaveEdgeList(GCombined, directory + 'Edge_List_Combined_' + item + '.txt')
+
 
 if __name__ == '__main__':
 	main(sys.argv)

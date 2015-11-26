@@ -9,9 +9,9 @@ green=`tput setaf 2`
 reset=`tput sgr0`
 
 item='Cell_Phones_and_Accessories'
-goodRating='5'
+goodRating='3'
 year=(2008 2009) # Mention years for parser_two_graphs.py file
-recommendYear=(2010)
+recommendYear=(2013)
 
 directory=$directory$item"/"
 mkdir -p $directory
@@ -23,7 +23,7 @@ T="$(($(date +%s)-T))"
 echo "${green}Completed Parsing in ${T} seconds${reset}"
 
 T="$(date +%s)"
-python centrality.py $directory $item
+#python centrality.py $directory $item
 T="$(($(date +%s)-T))"
 
 echo "${green}Completed Finding Centrality for Items and Users in ${T} seconds${reset}"
@@ -33,7 +33,7 @@ infomapItemsOutput=$directory
 cnmItemsFile=$directory"Community_Items_"$item".txt"
 
 T="$(date +%s)"
-python communitycnm.py $infomapItemsInput $cnmItemsFile
+#python communitycnm.py $infomapItemsInput $cnmItemsFile
 #./Infomap $infomapItemsInput $infomapItemsOutput -z -2 -u
 T="$(($(date +%s)-T))"
 
@@ -44,7 +44,7 @@ infomapUsersOutput=$directory
 cnmUsersFile=$directory"Community_Users_"$item".txt"
 
 T="$(date +%s)"
-python communitycnm.py $infomapUsersInput $cnmUsersFile
+#python communitycnm.py $infomapUsersInput $cnmUsersFile
 #./Infomap $infomapUsersInput $infomapUsersOutput -z -2 -u
 T="$(($(date +%s)-T))"
 
@@ -57,7 +57,7 @@ clustersItemsOutputDirectory=$directory"Unanalyzed_Items_Clusters/"
 mkdir -p $clustersItemsOutputDirectory
 
 T="$(date +%s)"
-python create_input_PR_files.py $cnmItemsFile $edgeListItems $clustersItemsOutputDirectory
+#python create_input_PR_files.py $cnmItemsFile $edgeListItems $clustersItemsOutputDirectory
 #python create_input_PR_files.py $treeItems $edgeListItems $clustersItemsOutputDirectory
 T="$(($(date +%s)-T))"
 
@@ -70,7 +70,7 @@ clustersUsersOutputDirectory=$directory"Unanalyzed_Users_Clusters/"
 mkdir -p $clustersUsersOutputDirectory
 
 T="$(date +%s)"
-python create_input_PR_files.py $cnmUsersFile $edgeListItems $clustersItemsOutputDirectory
+#python create_input_PR_files.py $cnmUsersFile $edgeListItems $clustersItemsOutputDirectory
 #python create_input_PR_files.py $treeUsers $edgeListUsers $clustersUsersOutputDirectory
 T="$(($(date +%s)-T))"
 
