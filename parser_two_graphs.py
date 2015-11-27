@@ -8,6 +8,7 @@ from os import listdir
 from os.path import isfile, join
 import shutil
 from collections import Counter
+import pickle
 
 GItems = snap.TUNGraph.New()
 userEdges = Counter()
@@ -20,13 +21,15 @@ reviewerIdUsers = {} # Key (string) is the reviewerID of the user and value is t
 
 GCombined = snap.TUNGraph.New()
 combinedNodeId = 0
+combinedDict1 = {} # Maps nodeIds to AmazonIds
+combinedDict2 = {} # Maps AmazonIds to nodeIds
 
 def parseIterator(path):
 	g = gzip.open(path, 'r')
 	for l in g:
 		yield eval(l)
 
-def parseItems(path):
+def parseItems(path, directory):
 	# Adding nodes to GItems
 	global combinedNodeId
 	itemsNodeId = 0
@@ -36,6 +39,8 @@ def parseItems(path):
 		GItems.AddNode(itemsNodeId)
 		GCombined.AddNode(itemsNodeId)
 		asinItems[item['asin']] = itemsNodeId
+		combinedDict1[itemsNodeId] = item['asin']
+		combinedDict2[item['asin']] = itemsNodeId
 		itemsNodeId +=1
 		# Store edges for later use
 		try: # Some items do not have related or bought_together
@@ -56,11 +61,18 @@ def parseItems(path):
 		GCombined.AddEdge(node1, node2)
 
 	combinedNodeId = itemsNodeId + 1
+	itemNodeIds = [] 
+	for i in range(0, combinedNodeId):
+		itemNodeIds.append(i)
 	
-def parseReviews(path, goodRating, userItemsFileName):
+	with open(directory + 'ItemNodeIds', 'wb') as outfile:
+		pickle.dump(itemNodeIds, outfile)
+	
+def parseReviews(path, goodRating, userItemsFileName, directory):
 	# Adding nodes to GUsers
 	usersNodeId = 0
 	global combinedNodeId
+	userNodeIds = [] 
 	nodeIdToCombinedNodeId = {}
 	for review in parseIterator(path):
 		# Adding nodes to GUsers
@@ -71,8 +83,18 @@ def parseReviews(path, goodRating, userItemsFileName):
 			nodeIdToCombinedNodeId[usersNodeId] = combinedNodeId
 			nodeIdUsers[usersNodeId] = review['reviewerID']
 			reviewerIdUsers[review['reviewerID']] = usersNodeId
+			combinedDict1[combinedNodeId] = review['reviewerID']
+			combinedDict2[review['reviewerID']] = combinedNodeId
 			usersNodeId += 1
+			userNodeIds.append(combinedNodeId)
 			combinedNodeId += 1
+			
+	f1 = open(directory+'NodeIdToAmazonId','w')
+	json.dump(combinedDict1,f1)
+	f1.close()
+	f2 = open(directory+'AmazonIdToCombinedId','w')
+	json.dump(combinedDict2,f2)
+	f2.close()
 
 	userToItems = {}
 
@@ -109,6 +131,8 @@ def parseReviews(path, goodRating, userItemsFileName):
 			GUsers.AddEdge(user1, user2)
 			GCombined.AddEdge(nodeIdToCombinedNodeId[user1], nodeIdToCombinedNodeId[user2])
 
+	with open(directory + 'UserNodeIds', 'wb') as outfile:
+		pickle.dump(userNodeIds, outfile)
 	#users = []
 	#reviews = parseIterator(path)
 	#while True: # Adding the first user with overall > goodRating
@@ -171,7 +195,7 @@ def main(argv):
 		shutil.copyfileobj(f_in, f_out)
 
 	# Parsing Items
-	parseItems(directoryItems + 'meta_' + item + '.json.gz')
+	parseItems(directoryItems + 'meta_' + item + '.json.gz', directory)
 	
 	snap.PrintInfo(GItems, 'GItems Information')
 	
@@ -184,7 +208,7 @@ def main(argv):
 	userItemsFileName = directory + '_User_Item_' + item + '.txt'
 	
 	# Parsing Reviews
-	parseReviews(directoryReviews+'reviews_'+item+'_combined.json.gz', goodRating, userItemsFileName)
+	parseReviews(directoryReviews+'reviews_'+item+'_combined.json.gz', goodRating, userItemsFileName, directory)
 	
 	snap.PrintInfo(GUsers, 'GUsers Information')
 
@@ -197,6 +221,7 @@ def main(argv):
 	snap.PrintInfo(GCombined, 'GCombined Information')
 
 	snap.SaveEdgeList(GCombined, directory + 'Edge_List_Combined_' + item + '.txt')
+
 
 
 if __name__ == '__main__':
