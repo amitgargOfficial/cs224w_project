@@ -5,6 +5,7 @@ from os.path import isfile, join
 from sys import argv
 import pickle
 import math
+import linkPrediction
 
 script, directory, item, inputDirectoryUsers, inputDirectoryItems = argv
 
@@ -37,36 +38,32 @@ inFiles = [f for f in listdir(inputDirectoryItems)
     if isfile(join(inputDirectoryItems,f)) ]
 # inFiles = ['cluster_100']
 
+
+# Read in userNodeIds
+userNodeIds = [] 
+with open(directory + 'UserNodeIds', 'rb') as infile1:
+    userNodeIds = pickle.load(infile1)
+
+# Read in itemNodeIds 
+itemNodeIds = [] 
+with open(directory + 'ItemNodeIds', 'rb') as infile1:
+    itemNodeIds = pickle.load(infile1)
+
+# Read in nodeToAmazonIds
+f1 = open(directory + 'NodeIdToAmazonId','r')
+nodeToAmazonIds = json.load(f1)
+f1.close()
+
+# Read in amazonIdsToNodeIds
+f2 = open(directory + 'AmazonIdToCombinedId', 'r')
+nodeToAmazonIds = json.load(f2)
+f2.close()
+
 nodesAtHopItems = []
 for filename in inFiles:
     with open(inputDirectoryItems + filename, 'r') as infile4:
         curCluster = json.load(infile4)
     nodesAtHopItems.append(curCluster)
-
-# filename = directory + '/Clusters_Users/Edge_List_' + graph + '_' + item + '.tree'
-
-# # Read in communities 
-# communitiesToNode = {}
-# nodeToCommunities = {}
-# N = 400
-# with open(filename, 'r') as inputFile:
-#   idx = 1
-#   NIdV = snap.TIntV()
-#   for line in inputFile.readlines():
-#       if line[0] == '#':
-#           continue
-#       if idx > N:
-#           continue
-#       colon = line.split(':',1)
-#       clusterNum = int(colon[0])
-#       nodeId = int(colon[1].split()[-1])
-#       if not nodeId in nodeToCommunities: 
-#           nodeToCommunities[nodeId] = set()
-#       nodeToCommunities[nodeId].add(clusterNum)
-
-#       if not clusterNum in communitiesToNode:
-#           communitiesToNode[clusterNum] = set() 
-#       communitiesToNode[clusterNum].add(nodeId)
 
 userToItems = {}
 with open(directory + '_User_Item_' + item + '.txt', 'r') as infile4:
@@ -75,6 +72,21 @@ with open(directory + '_User_Item_' + item + '.txt', 'r') as infile4:
 
 usersGraph = snap.LoadEdgeList(snap.PUNGraph, directory + 'Edge_List_Users_' + item +'.txt', 0, 1, '\t')
 itemsGraph = snap.LoadEdgeList(snap.PUNGraph, directory + 'Edge_List_Items_' + item +'.txt', 0, 1, '\t')
+GCombined = snap.LoadEdgeList(snap.PUNGraph, directory + 'Edge_List_Combined_' + item +'.txt', 0, 1, '\t')
+
+predictLinksJaccard(GCombined, nodesAtHop, itemNodeIds, userNodeIds, directory)
+predictLinksNegatedShortestPath(GCombined, nodesAtHop, itemNodeIds, userNodeIds, directory)
+predictLinksAdamicAdar(GCombined, nodesAtHop, itemNodeIds, userNodeIds, directory)
+
+with open(directory + 'Jaccards', 'rb') as infile1:
+    scoresJaccard = pickle.load(infile1)
+    
+with open(directory + 'NegatedShortestPath', 'rb') as infile2:
+    scoresNegatedShortedPath = pickle.load(infile2)
+    
+scoresAdamicAdar = {}
+with open(directory + 'AdamicAdar', 'rb') as infile3:
+    scoresAdamicAdar = pickle.load(infile3)
 
 # PR, EIG
 wtVec = [2.0, 1.5]
@@ -100,7 +112,7 @@ def updateDict(scores, hopDistance, queryUser, targetUser, items, alreadyBought)
     # print 100.0*numThrownAway/len(items)
     return
     
-N = 2 # How many predictions per user
+N = 10 # How many predictions per user
 
 itemToCommunityDict = {} 
 for community in nodesAtHopItems:

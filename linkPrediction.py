@@ -3,11 +3,8 @@ from sys import argv
 import pickle
 import networkx
 
-argv.pop(0)
-directory = argv.pop(0)
-
 # TODO: Generate itemNodeIds, userNodeIds
-def predictLinksJaccard(GCombined, nodesAtHop, itemNodeIds, userNodeIds):
+def predictLinksJaccard(GCombined, nodesAtHop, itemNodeIds, userNodeIds, directory):
     nodesToNeighbors = {}
     for node in GCombined.Nodes():
         NodeVec = snap.TIntV()
@@ -33,7 +30,7 @@ def predictLinksJaccard(GCombined, nodesAtHop, itemNodeIds, userNodeIds):
         pickle.dump(scores, outfile)
                 
 
-def predictLinksNegatedShortestPath(GCombined, nodesAtHop, itemNodeIds, userNodeIds):
+def predictLinksNegatedShortestPath(GCombined, nodesAtHop, itemNodeIds, userNodeIds, directory):
     scores = {} 
     for node1 in userNodeIds:
         for node2 in itemNodeIds:
@@ -48,7 +45,7 @@ def predictLinksNegatedShortestPath(GCombined, nodesAtHop, itemNodeIds, userNode
     with open(directory + 'NegatedShortestPath', 'wb') as outfile:
         pickle.dump(scores, outfile)
     
-def predictLinksAdamicAdar(GCombined, nodesAtHop, itemNodeIds, userNodeIds):
+def predictLinksAdamicAdar(GCombined, nodesAtHop, itemNodeIds, userNodeIds, directory):
     scores = {}
     preds = nx.adamic_adar_index(G)
         
