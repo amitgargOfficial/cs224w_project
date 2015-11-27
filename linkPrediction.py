@@ -8,10 +8,8 @@ def predictLinksJaccard(GCombined, nodesAtHop, itemNodeIds, userNodeIds, directo
     nodesToNeighbors = {}
     for node in GCombined.Nodes():
         NodeVec = snap.TIntV()
-        snap.GetNodesAtHop(GCombined, nodeId, 1, NodeVec, False)
+        snap.GetNodesAtHop(GCombined, node.GetId(), 1, NodeVec, False)
         nodesToNeighbors[node] = NodeVec
-        for item in NodeVec:
-            print item
     
     scores = {} 
     for node1 in userNodeIds:

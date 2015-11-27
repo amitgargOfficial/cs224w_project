@@ -112,7 +112,7 @@ def parseReviews(path, goodRating, userItemsFileName, directory):
 			if not user in userToItems:
 				userToItems[user] = []
 			userToItems[user].append(asinItems[asin])
-			GCombined.AddEdge(user, asinItems[asin])
+			GCombined.AddEdge(nodeIdToCombinedNodeId[user], asinItems[asin])
 	
 	with open(userItemsFileName, 'w') as outfile:
 		json.dump(userToItems, outfile)

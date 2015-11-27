@@ -5,7 +5,8 @@ from os.path import isfile, join
 from sys import argv
 import pickle
 import math
-import linkPrediction
+from linkPrediction import *
+
 
 script, directory, item, inputDirectoryUsers, inputDirectoryItems = argv
 
