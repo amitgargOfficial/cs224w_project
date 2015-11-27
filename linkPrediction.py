@@ -1,10 +1,10 @@
 import snap
-import networkx as nx
-import sys
+from sys import argv
+import pickle
+import networkx
 
 argv.pop(0)
 directory = argv.pop(0)
-G = nx.read_edgelist(directory + 'Edge_List_Combined_' + item + '.txt')
 
 # TODO: Generate itemNodeIds, userNodeIds
 def predictLinksJaccard(GCombined, nodesAtHop, itemNodeIds, userNodeIds):
@@ -29,6 +29,8 @@ def predictLinksJaccard(GCombined, nodesAtHop, itemNodeIds, userNodeIds):
                 if not node1 in scores:
                     scores[node1] = {}
                 scores[node1][node2] = 0.0
+    with open(directory + 'Jaccards', 'wb') as outfile:
+        pickle.dump(scores, outfile)
                 
 
 def predictLinksNegatedShortestPath(GCombined, nodesAtHop, itemNodeIds, userNodeIds):
@@ -43,7 +45,18 @@ def predictLinksNegatedShortestPath(GCombined, nodesAtHop, itemNodeIds, userNode
                 if not node1 in scores:
                     scores[node1] = {}
                 scores[node1][node2] = 0.0
-    
+    with open(directory + 'NegatedShortestPath', 'wb') as outfile:
+        pickle.dump(scores, outfile)
     
 def predictLinksAdamicAdar(GCombined, nodesAtHop, itemNodeIds, userNodeIds):
-    scores = nx.adamic_adar_index(G)
+    scores = {}
+    preds = nx.adamic_adar_index(G)
+        
+    for u, v, p in preds:
+        if not u in scores:
+            scores[u] = {}
+        scores[u][v] = p
+    
+    with open(directory + 'AdamicAdar', 'wb') as outfile:
+        pickle.dump(scores, outfile)
+    
