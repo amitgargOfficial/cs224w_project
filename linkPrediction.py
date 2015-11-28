@@ -3,6 +3,7 @@ from sys import argv
 import pickle
 import networkx as nx
 
+
 # TODO: Generate itemNodeIds, userNodeIds
 def predictLinksJaccard(GCombined, nodesAtHop, itemNodeIds, userNodeIds, directory):
     nodesToNeighbors = {}
@@ -44,8 +45,9 @@ def predictLinksNegatedShortestPath(GCombined, nodesAtHop, itemNodeIds, userNode
     with open(directory + 'NegatedShortestPath', 'wb') as outfile:
         pickle.dump(scores, outfile)
     
-def predictLinksAdamicAdar(GCombined, nodesAtHop, itemNodeIds, userNodeIds, directory):
+def predictLinksAdamicAdar(nodesAtHop, itemNodeIds, userNodeIds, directory, item):
     scores = {}
+    GCombined = nx.read_edgelist(directory + 'Edge_List_Combined_' + item + '.txt')
     preds = nx.adamic_adar_index(GCombined)
         
     for u, v, p in preds:
