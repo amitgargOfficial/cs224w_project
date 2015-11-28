@@ -60,7 +60,7 @@ def parseItems(path, directory):
 		GItems.AddEdge(node1, node2)
 		GCombined.AddEdge(node1, node2)
 
-	combinedNodeId = itemsNodeId + 1
+	combinedNodeId = itemsNodeId
 	itemNodeIds = [] 
 	for i in range(0, combinedNodeId):
 		itemNodeIds.append(i)
